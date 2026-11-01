@@ -6,7 +6,7 @@ Mentorship is advice. Herbaceous builds the advocacy. 🌱
 
 <br><br>
 
-<a href="https://YOUR-LIVE-SITE-URL"><img src="https://img.shields.io/badge/Live_Site-2E7D32?style=for-the-badge&logo=googlechrome&logoColor=white" /></a>
+<a href="https://herbaceous.palashrambhia.dev/"><img src="https://img.shields.io/badge/Live_Site-2E7D32?style=for-the-badge&logo=googlechrome&logoColor=white" /></a>
 
 React Tailwind Express Prisma PostgreSQL AWS Flask
 
@@ -22,23 +22,19 @@ Herbaceous matches mentees with verified mentors using an explainable compatibil
 
 Application Images:
 
-Home STEM Insights Dashboard
+<p align="center"> <img src="readme-images/home.jpg" alt="Herbaceous homepage" width="860"> </p>
 
-<img src="readme/home.png" width="280"> <img src="readme/stem-insights.png" width="280"> <img src="readme/dashboard.png" width="280">
+Dashboard Mentor Matching Weekly Planner
 
-Mentor Matching Weekly Planner Advocacy
+<img src="readme-images/mentee-dashboard.jpg" width="280"> <img src="readme-images/mentor-matching.jpg" width="280"> <img src="readme-images/weekly-planner.jpg" width="280">
 
-<img src="readme/matching.png" width="280"> <img src="readme/weekly-planner.png" width="280"> <img src="readme/advocacy.png" width="280">
+Chat & Calendar Advocacy STEM Insights
+
+<img src="readme-images/chat-calendar.jpg" width="280"> <img src="readme-images/advocacy-requests.jpg" width="280"> <img src="readme-images/stem-insights.jpg" width="280">
 
 How It Works:
 
-flowchart LR
-U["Mentors & mentees"] --> UI["React frontend<br/>(S3 + CloudFront)"]
-UI --> AUTH["AWS Cognito"]
-UI --> API["Express API"]
-API --> DB[("PostgreSQL")]
-API --> AI["Flask matching service"]
-AI --> GEMINI["Google Gemini"]
+<p align="center"> <img src="readme-images/architecture.svg" alt="Herbaceous architecture" width="860"> </p>
 
 Frontend:
 
