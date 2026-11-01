@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 300" width="850" height="300" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7d8590"/>
+    </marker>
+    <style>
+      .own { fill: #2E7D32; }
+      .ext { fill: #475569; }
+      .title { fill: #ffffff; font-size: 15px; font-weight: 600; text-anchor: middle; }
+      .sub { fill: #e2e8f0; font-size: 11.5px; text-anchor: middle; }
+      .edge { stroke: #7d8590; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .label { fill: #7d8590; font-size: 11px; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Edges -->
+  <path class="edge" d="M170,150 H238"/>
+  <path class="edge" d="M390,150 H458"/>
+  <text class="label" x="424" y="141" text-anchor="middle">REST</text>
+  <path class="edge" d="M610,150 H678"/>
+  <text class="label" x="644" y="141" text-anchor="middle">Prisma</text>
+  <path class="edge" d="M315,122 V50 H458"/>
+  <text class="label" x="386" y="42" text-anchor="middle">Sign in</text>
+  <path class="edge" d="M535,122 V80"/>
+  <text class="label" x="545" y="105">Verify token</text>
+  <path class="edge" d="M535,178 V220"/>
+  <text class="label" x="545" y="203">Match score</text>
+  <path class="edge" d="M610,250 H678"/>
+  <text class="label" x="644" y="241" text-anchor="middle">Extract</text>
+
+  <!-- Users -->
+  <rect class="ext" x="20" y="122" width="150" height="56" rx="12"/>
+  <text class="title" x="95" y="146">Users</text>
+  <text class="sub" x="95" y="164">Mentors &amp; mentees</text>
+
+  <!-- Frontend -->
+  <rect class="own" x="240" y="122" width="150" height="56" rx="12"/>
+  <text class="title" x="315" y="146">Frontend</text>
+  <text class="sub" x="315" y="164">React on CloudFront</text>
+
+  <!-- API -->
+  <rect class="own" x="460" y="122" width="150" height="56" rx="12"/>
+  <text class="title" x="535" y="146">Express API</text>
+  <text class="sub" x="535" y="164">Node.js</text>
+
+  <!-- Database -->
+  <rect class="ext" x="680" y="122" width="150" height="56" rx="12"/>
+  <text class="title" x="755" y="146">PostgreSQL</text>
+  <text class="sub" x="755" y="164">Neon</text>
+
+  <!-- Cognito -->
+  <rect class="ext" x="460" y="22" width="150" height="56" rx="12"/>
+  <text class="title" x="535" y="46">AWS Cognito</text>
+  <text class="sub" x="535" y="64">Authentication</text>
+
+  <!-- Flask -->
+  <rect class="own" x="460" y="222" width="150" height="56" rx="12"/>
+  <text class="title" x="535" y="246">Flask Service</text>
+  <text class="sub" x="535" y="264">Python matching</text>
+
+  <!-- Gemini -->
+  <rect class="ext" x="680" y="222" width="150" height="56" rx="12"/>
+  <text class="title" x="755" y="246">Google Gemini</text>
+  <text class="sub" x="755" y="264">Resume dates</text>
+</svg>
