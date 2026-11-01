@@ -1,0 +1,4 @@
+flask
+python-dotenv
+google-genai
+gunicorn==23.0.0

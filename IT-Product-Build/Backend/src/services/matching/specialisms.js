@@ -1,0 +1,18 @@
+export const SPECIALISMS = [
+  { label: "Genomics", goals: ["skills"] },
+  { label: "Research careers", goals: ["direction", "research"] },
+  { label: "Publishing", goals: ["research"] },
+  { label: "ML systems", goals: ["skills"] },
+  { label: "Interview prep", goals: ["applications"] },
+  { label: "Bioinformatics", goals: ["skills"] },
+  { label: "Grant writing", goals: ["research", "applications"] },
+  { label: "PhD applications", goals: ["applications", "research"] },
+  { label: "Data strategy", goals: ["skills", "leadership"] },
+  { label: "Leadership", goals: ["leadership", "workplace"] },
+  { label: "Structural biology", goals: ["skills"] },
+  { label: "Aerospace systems", goals: ["skills"] },
+  { label: "Engineering careers", goals: ["direction"] },
+  { label: "Confidence", goals: ["confidence", "workplace"] },
+  { label: "Industry networking", goals: ["network"] },
+  { label: "Workplace navigation", goals: ["workplace"] },
+];

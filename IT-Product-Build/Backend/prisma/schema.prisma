@@ -1,0 +1,383 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================ 
+// GROUP 0: STATISTICS 
+// ============================================================
+model PipelineStatistic {
+  id            String   @id @default(cuid())
+  key           String   @unique
+  section       String
+  label         String
+  value         Float
+  displaySuffix String?
+  detail        String?
+  sourceLabel   String?
+  sourceUrl     String?
+  order         Int      @default(0)
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
+}
+
+// ============================================================
+// GROUP 1: IDENTITY
+// ============================================================
+
+enum Role {
+  MENTEE
+  MENTOR
+  ADMIN
+}
+
+model User {
+  id             String          @id @default(cuid())
+  cognitoUid     String          @unique
+  syntheticEmail String          @unique
+  displayName    String
+  role           Role
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  menteeProfile  MenteeProfile?
+  mentorProfile  MentorProfile?
+  calendarEvents CalendarEvent[]
+  helpTickets    HelpTicket[]
+
+  @@index([role])
+}
+
+model MenteeProfile {
+  id                  String              @id @default(cuid())
+  userId              String              @unique
+  field               String?
+  careerStage         String?
+  mentoringStyle      String?
+  availabilityCadence String?
+  availabilityTimes   String[]
+  goals               String[]            @default([])
+  about               String?
+  user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requests            MentorshipRequest[]
+  mentorships         Mentorship[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+}
+
+model MentorProfile {
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  field               String?
+  jobTitle            String?
+  company             String?
+  yearsExperience     Int?
+  specialisms         String[]  @default([])
+  bio                 String?
+  mentoringStyle      String?
+  availabilityCadence String?
+  availabilityTimes   String[]  @default([])
+  isVerified          Boolean   @default(false)
+  verifiedAt          DateTime?
+  acceptingMentees    Boolean   @default(true)
+  openAvailability    Boolean   @default(false)
+
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentials Credential[]
+  requests    MentorshipRequest[]
+  mentorships Mentorship[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isVerified])
+  @@index([field])
+}
+
+enum CredentialStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Credential {
+  id              String           @id @default(cuid())
+  mentorProfileId String
+  type            String
+  extractedFields Json?
+  status          CredentialStatus @default(PENDING)
+  reviewedById    String?
+  reviewedAt      DateTime?
+  reviewNote      String?
+  consentedAt     DateTime?
+
+  mentorProfile MentorProfile @relation(fields: [mentorProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([mentorProfileId])
+  @@index([status])
+}
+
+// ============================================================
+// GROUP 2: RELATIONSHIP FORMATION
+// ============================================================
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+  CLOSED
+}
+
+model MentorshipRequest {
+  id              String        @id @default(cuid())
+  menteeProfileId String
+  mentorProfileId String
+  message         String?
+  status          RequestStatus @default(PENDING)
+  respondedAt     DateTime?
+  responseNote    String?
+
+  menteeProfile MenteeProfile @relation(fields: [menteeProfileId], references: [id], onDelete: Cascade)
+  mentorProfile MentorProfile @relation(fields: [mentorProfileId], references: [id], onDelete: Cascade)
+  mentorship    Mentorship?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([menteeProfileId, status])
+  @@index([mentorProfileId, status])
+}
+
+enum MentorshipStatus {
+  ACTIVE
+  PAUSED
+  ENDED
+}
+
+model Mentorship {
+  id              String           @id @default(cuid())
+  menteeProfileId String
+  mentorProfileId String
+  requestId       String?          @unique
+  status          MentorshipStatus @default(ACTIVE)
+  startedAt       DateTime         @default(now())
+  endedAt         DateTime?
+  endReason       String?
+  endedById       String?
+  matchScore      Int?
+
+  chatRoomUrl         String?
+  chatRoomUpdatedById String?
+  chatRoomUpdatedAt   DateTime?
+
+  menteeProfile MenteeProfile      @relation(fields: [menteeProfileId], references: [id])
+  mentorProfile MentorProfile      @relation(fields: [mentorProfileId], references: [id])
+  request       MentorshipRequest? @relation(fields: [requestId], references: [id])
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  weeklyLogs       WeeklyLog[]
+  pauseRequests    PauseRequest[]
+  calendarEvents   CalendarEvent[]
+  advocacyRequests AdvocacyRequest[]
+  toleranceEvents  ToleranceEvent[]
+  meetingLinks     MeetingLink[]
+
+  @@index([menteeProfileId, status])
+  @@index([mentorProfileId, status])
+}
+
+// ============================================================ 
+// Group 3: Weekly check-in and communication (E4)
+// ============================================================
+
+model WeeklyLog {
+  id           String     @id @default(cuid())
+  mentorshipId String
+  mentorship   Mentorship @relation(fields: [mentorshipId], references: [id])
+  weekNumber   Int
+  status       LogStatus
+  note         String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([mentorshipId, weekNumber])
+  @@index([mentorshipId])
+  @@index([mentorshipId, status])
+}
+
+enum LogStatus {
+  DONE
+  SKIPPED
+}
+
+model PauseRequest {
+  id            String             @id @default(cuid())
+  mentorshipId  String
+  mentorship    Mentorship         @relation(fields: [mentorshipId], references: [id])
+  requestedById String
+  type          PauseType
+  reason        String
+  expectedWeeks Int?
+  status        PauseRequestStatus @default(PENDING)
+  respondedAt   DateTime?
+  responseNote  String?
+  createdAt     DateTime           @default(now())
+
+  @@index([mentorshipId])
+  @@index([mentorshipId, status])
+}
+
+enum PauseType {
+  PAUSE
+  RESUME
+}
+
+enum PauseRequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  WITHDRAWN
+  CLOSED
+}
+
+model MeetingLink {
+  id           String     @id @default(cuid())
+  mentorshipId String
+  mentorship   Mentorship @relation(fields: [mentorshipId], references: [id])
+  url          String
+  label        String?
+  createdById  String
+  createdAt    DateTime   @default(now())
+
+  calendarEvents CalendarEvent[]
+
+  @@index([mentorshipId])
+}
+
+model CalendarEvent {
+  id            String              @id @default(cuid())
+  mentorshipId  String
+  mentorship    Mentorship          @relation(fields: [mentorshipId], references: [id])
+  type          CalendarType
+  title         String
+  note          String?
+  startsAt      DateTime?
+  meetingLinkId String?
+  meetingLink   MeetingLink?        @relation(fields: [meetingLinkId], references: [id])
+  status        CalendarEventStatus @default(SCHEDULED)
+  createdById   String
+  creator       User                @relation(fields: [createdById], references: [id])
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([mentorshipId])
+  @@index([mentorshipId, status])
+}
+
+enum CalendarType {
+  MEETING
+  REMINDER
+  NOTE
+}
+
+enum CalendarEventStatus {
+  SCHEDULED
+  CANCELLED
+}
+
+// ============================================================ 
+// Group 4: Advocacy (E5)
+// ============================================================
+
+model AdvocacyRequest {
+  id           String         @id @default(cuid())
+  mentorshipId String
+  mentorship   Mentorship     @relation(fields: [mentorshipId], references: [id])
+  type         AdvocacyType
+  details      String?
+  status       AdvocacyStatus @default(PENDING)
+  respondedAt  DateTime?
+  completedAt  DateTime?
+  mentorNote   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([mentorshipId])
+  @@index([mentorshipId, status])
+}
+
+enum AdvocacyType {
+  REFERRAL
+  INTRODUCTION
+  NOMINATION
+  ENDORSEMENT
+  OTHER
+}
+
+enum AdvocacyStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  DONE
+  WITHDRAWN
+  CLOSED
+}
+
+// ============================================================
+// GROUP 5: GOVERNANCE
+// ============================================================
+
+enum ToleranceCategory {
+  MISSED_COMMITMENTS
+  UNRESPONSIVE
+  PLAN_NOT_FOLLOWED
+  CONDUCT_CONCERN
+  OTHER
+}
+
+model ToleranceEvent {
+  id           String            @id @default(cuid())
+  mentorshipId String
+  mentorship   Mentorship        @relation(fields: [mentorshipId], references: [id])
+  category     ToleranceCategory
+  reason       String
+  createdById  String
+  createdAt    DateTime          @default(now())
+
+  @@index([mentorshipId])
+}
+
+enum HelpTicketCategory {
+  CONDUCT
+  SAFETY
+  TECHNICAL
+  OTHER
+}
+
+enum HelpTicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+model HelpTicket {
+  id        String             @id @default(cuid())
+  userId    String
+  user      User               @relation(fields: [userId], references: [id])
+  category  HelpTicketCategory
+  message   String             @db.VarChar(1000)
+  status    HelpTicketStatus   @default(OPEN)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([status, createdAt])
+}
